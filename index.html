@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+        <script src="app.js"></script>        
+    </head>
+    <body>
+        <div style="display:flex; flex-direction:column;justify-content: space-around">
+            <div style="align-self: center; margin:3em">
+                <label>Enter your name:</label>
+                <input data-bind="textInput: UserName"></input>
+            </div>
+            <div style="display:flex;flex-direction:row;justify-content: space-around">
+                <div style="display:flex;flex-direction:column; cursor:pointer" data-bind="visible: CanRate, click: votedA">
+                    <img width="100%" data-bind="attr: { src: picA().GetURL() }"/>
+                    <label data-bind="text: picA().GetName()"></label>
+                </div>
+                <div style="display:flex;flex-direction:column; cursor:pointer" data-bind="visible: CanRate, click: votedB">
+                    <img width="100%" data-bind="attr: { src: picB().GetURL() }"/>
+                    <label data-bind="text: picB().GetName()"></label>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
