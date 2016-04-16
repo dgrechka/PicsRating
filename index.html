@@ -1,20 +1,34 @@
 <html>
     <head>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+        <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
         <script src="app.js"></script>        
     </head>
     <body>
         <div style="display:flex; flex-direction:column;justify-content: space-around">
             <div style="align-self: center; margin:3em">
-                <label>Enter your name:</label>
-                <input data-bind="textInput: UserName"></input>
+                <h2 data-bind="visible: !CanRate()">Введите ваше уникальное и выберите слово-подпись</h2>
+                <h2 data-bind="visible: CanRate()">Выберите ваш вариант</h2>
+                <div title="Как Вы будете отображаться в статистике результатов">
+                    <label>Ваше уникальное имя:</label>
+                    <input data-bind="textInput: UserName"></input>
+                </div>
+                <div  title="Слово, известное только Вам. Не хранится на back-end. Используется для создания криптографической контрольной суммы вашего выбора">
+                    <label>Слово-подпись:</label>
+                    <input type="password" data-bind="textInput: Authword"></input>
+                </div>
+                <div>
+                    <label>Слово-подпись еще раз:</label>
+                    <input type="password" data-bind="textInput: Authword2"></input>
+                </div>
+                <p data-bind="visible: !AuthwordsMatch() && Authword().length>0">Введеные Вами Слова-подписи не совпадают</p>
             </div>
-            <div style="display:flex;flex-direction:row;justify-content: space-around">
-                <div style="display:flex;flex-direction:column; cursor:pointer" data-bind="visible: CanRate, click: votedA">
+            <div style="display:flex; flex-direction:row; justify-content: space-around">
+                <div style="display:flex;flex-direction:column; cursor:pointer" data-bind="visible: CanRate(), click: votedA">
                     <img width="100%" data-bind="attr: { src: picA().GetURL() }"/>
                     <label data-bind="text: picA().GetName()"></label>
                 </div>
-                <div style="display:flex;flex-direction:column; cursor:pointer" data-bind="visible: CanRate, click: votedB">
+                <div style="display:flex;flex-direction:column; cursor:pointer" data-bind="visible: CanRate(), click: votedB">
                     <img width="100%" data-bind="attr: { src: picB().GetURL() }"/>
                     <label data-bind="text: picB().GetName()"></label>
                 </div>
