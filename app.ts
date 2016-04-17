@@ -22,38 +22,45 @@ var CryptoJS: any;
 
 interface IPicture {
     GetURL():string;
+    GetID():number;
     GetName():string;
 }
 
-var path = "sample_images/";
-var votesRegistryPath = "api/vote"
+var path = "http://itis.cs.msu.ru/images/";
+var votesRegistryPath = "http://home.dgrechka.net/PicsRating/Vote/"
 
-var catPicture : IPicture = {
-    GetURL: () => path+"cat.png",
-    GetName: () => "Cat"    
+var m1 : IPicture = {
+    GetURL: () => path+"molecule.svg",
+    GetName: () => "m1",
+    GetID:() => 2  
 };
-var birdsPicture : IPicture = {
-    GetURL: () => path+"birds.jpg",
-    GetName: () => "Birds"    
+var m2 : IPicture = {
+    GetURL: () => path+"molecule2.svg",
+    GetName: () => "m2",
+    GetID: () => 3    
 };
-var earthPicture : IPicture = {
-    GetURL: () => path+"earth.jpg",
-    GetName: () => "Earth"    
+var ufo : IPicture = {
+    GetURL: () => path+"ufo_cow.svg",
+    GetName: () => "ufo",
+    GetID: () => 4    
 };
-var elPicture : IPicture = {
-    GetURL: () => path+"elef.jpg",
-    GetName: () => "Elephant"    
+var m3 : IPicture = {
+    GetURL: () => path+"molecule3.svg",
+    GetName: () => "m3",
+    GetID: () => 5    
 };
-var goatPicture : IPicture = {
-    GetURL: () => path+"goat.jpg",
-    GetName: () => "Goat"    
+var s1 : IPicture = {
+    GetURL: () => path+"IMG_15042016_174916.png",
+    GetName: () => "s1",
+    GetID: () => 6    
 };
-var leafPicture : IPicture = {
-    GetURL: () => path+"leaf.jpg",
-    GetName: () => "Leaf"    
+var t1 : IPicture = {
+    GetURL: () => path+"path3373.png",
+    GetName: () => "t1",
+    GetID: () => 7    
 };
 
-var pics = [catPicture,birdsPicture,earthPicture,elPicture,goatPicture,leafPicture];
+var pics = [m1,m2,ufo,m3,s1,t1];
 
 var vm:any = {
     UserName: ko.observable(""),
@@ -94,8 +101,9 @@ function SaveCreds() {
 
 function Vote(picWin: IPicture,picLose: IPicture) {
     var xhttp = new XMLHttpRequest();
+    xhttp.withCredentials = true;
     var voteHash =  CryptoJS.MD5(vm.UserName()+vm.Authword()+picWin.GetName()+picLose.GetName());
-    xhttp.open("GET", votesRegistryPath+"?voteID=1&username="+vm.UserName()+"&picWin="+picWin.GetName()+"&picLose="+picLose.GetName()+"&userSig="+vm.NameSignature()+"&voteSig="+voteHash, true);
+    xhttp.open("GET", votesRegistryPath+"?voteName=itis_logo&username="+vm.UserName()+"&picWin="+picWin.GetID()+"&picLose="+picLose.GetID()+"&userSig="+vm.NameSignature()+"&voteSig="+voteHash, true);
     xhttp.send();        
 }
 
