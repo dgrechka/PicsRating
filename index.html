@@ -2,7 +2,9 @@
     <head>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
         <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/md5.js"></script>
-        <script src="app.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+        <script src="bundle.js"></script>
+        <link href="app.css" rel="stylesheet" title="Default Style">
         <meta charset="UTF-8">   
     </head>
     <body>
@@ -24,14 +26,15 @@
                 </div>
                 <p data-bind="visible: !AuthwordsMatch() && Authword().length>0">Введеные Вами Слова-подписи не совпадают</p>
             </div>
+            <button data-bind="click: Regenerate" style="align-self: center; margin:0.5em">Сменить картинки</button>
             <div style="display:flex; flex-direction:row; justify-content: space-around">
-                <div style="display:flex;flex-direction:column; cursor:pointer" data-bind="visible: CanRate(), click: votedA">
+                <div class="picture" data-bind="visible: CanRate(), click: votedA">
                     <img width="100%" data-bind="attr: { src: picA().GetURL() }"/>
-                    <label data-bind="text: picA().GetName()"></label>
+                    <label data-bind="text: picA().GetCaption()"></label>
                 </div>
-                <div style="display:flex;flex-direction:column; cursor:pointer" data-bind="visible: CanRate(), click: votedB">
+                <div class="picture" data-bind="visible: CanRate(), click: votedB">
                     <img width="100%" data-bind="attr: { src: picB().GetURL() }"/>
-                    <label data-bind="text: picB().GetName()"></label>
+                    <label data-bind="text: picB().GetCaption()"></label>
                 </div>
             </div>
         </div>

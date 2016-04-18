@@ -1,0 +1,10 @@
+.picture {
+    border-style: dotted;
+    border-radius: 3em;
+    padding: 2.5em;
+    display: flex;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

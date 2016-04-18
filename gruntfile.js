@@ -2,8 +2,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
        typescript: {
             base: {
-                src: ['*.ts'],
-                dest: '.',
+                src: ['*.ts','!*.d.ts'],
+                dest: './bundle.js',
                 options: {
                     module: 'amd', //or commonjs 
                     target: 'es5', //or es3                     
