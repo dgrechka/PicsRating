@@ -1,0 +1,7 @@
+{
+  "version": false,
+  "dependencies": {},
+  "ambientDependencies": {
+    "knockout": "registry:dt/knockout#0.0.0+20160409112158"
+  }
+}

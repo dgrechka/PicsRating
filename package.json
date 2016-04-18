@@ -1,8 +1,7 @@
 {
-  "Dependencies": {
-    "ntypescript": "1.201604150006.1"
-  },
   "devDependencies": {
-    "grunt": "1.0.1"
+    "grunt": "0.4.5",
+    "grunt-typescript": "^0.8.0",
+    "grunt-typings": "^0.1.4"
   }
 }

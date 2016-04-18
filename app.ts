@@ -1,4 +1,4 @@
- /// <reference path="typings/tsd.d.ts"/>
+/// <reference path="typings/main.d.ts"/>
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -92,6 +92,9 @@ var vm:any = {
     NameSignature: ko.pureComputed(() => {
         return CryptoJS.MD5(vm.UserName()+vm.Authword());
     }),
+    Reganerate: () => {
+        RegenPics();
+    }
 };
 
 function SaveCreds() {
