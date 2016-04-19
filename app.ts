@@ -3,19 +3,43 @@
 /// <reference path="Client.ts" />
 /// <reference path="ViewModel.ts" />
 
-var serviceURL = "http://home.dgrechka.net/PicsRating";
+var backendURL = "http://home.dgrechka.net/PicsRating";
+
+var galleryName= "itis_logo";
+
+var gallery: Core.IGallery = new Client.RemoteGallery(backendURL);
+var voter: Core.IVote = new Client.RemoteVoter(backendURL);
+var galleryStats: Core.IGalleryStats = new Client.RemoteGalleryStats(backendURL);
+        
+var voteVM = new ViewModels.VoteVM(gallery,voter,galleryName);
+var statsVM = new ViewModels.StatsVM(galleryStats);
+
+function getWinsProgressBar(wins:string,loses:string) {
+    return (parseInt(wins)/(parseInt(wins)+parseInt(loses)))*100.0+"%";
+}
+
+function getLosesProgressBar(wins:string,loses:string) {
+    return (parseInt(loses)/(parseInt(wins)+parseInt(loses)))*100.0+"%";
+}
+
+var isVotingMode = true;
+
+function ToggleModes() {
+    if(isVotingMode) {
+        $("#voting").css("display","none");
+        $("#stats").css("display","flex");
+        $("#modesButton").text("Back to voting")
+        statsVM.Populate(galleryName);
+    }
+    else {
+        $("#voting").css("display","flex");
+        $("#stats").css("display","none");
+        $("#modesButton").text("Show voting results");
+    }
+    isVotingMode = !isVotingMode;
+}
 
 window.onload = () => {
-    var gallery: Core.IGallery = new Client.RemoteGallery(serviceURL);
-    var voter: Core.IVote = new Client.RemoteVoter(serviceURL);
-        
-    var picturesPromise = gallery.GetPictures("itis_logo");
-    
-    picturesPromise
-        .done((pictures:Array<Core.IPicture>) => {
-            var viewModel = new ViewModel.ViewModel(pictures,voter);
-            ko.applyBindings(viewModel);
-            viewModel.Regenerate();
-        })
-        .fail((error:any) => console.error(error));      
+    ko.applyBindings(voteVM,document.getElementById("voting"));
+    ko.applyBindings(statsVM,document.getElementById("stats"));
 };

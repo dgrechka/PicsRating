@@ -2,16 +2,33 @@
 /// <reference path="Core.ts" />
 /// <reference path="Cookies.ts" />
 
-namespace ViewModel {
-export class ViewModel {
-    constructor(private pictures: Array<Core.IPicture>, private voter:Core.IVote) {
+var picturePlaceHolder:Core.IPicture = {
+    GetCaption: () => "Loading...",
+    GetName: () => "Picture placeholder",
+    GetURL: () => "#"
+}
+
+namespace ViewModels {
+export class VoteVM {
+    private pictures: Array<Core.IPicture> = [];
+    constructor(private gallery:Core.IGallery, private voter:Core.IVote,private galleryName:string) {
             this.UserName(Cookies.getCookie("username"));
-            this.Authword(Cookies.getCookie("authword"));  
+            this.Authword(Cookies.getCookie("authword"));
+            
+            var picturesPromise = gallery.GetPictures(galleryName);
+    
+            picturesPromise
+                .done((pictures:Array<Core.IPicture>) => {
+                    this.pictures = pictures;
+                    this.Regenerate();
+                })
+                .fail((error:any) => console.error(error));      
     }
     
+    
     public UserName = ko.observable("");
-    public picA = ko.observable<Core.IPicture>(this.pictures[0]);
-    public picB = ko.observable<Core.IPicture>(this.pictures[1]);
+    public picA = ko.observable<Core.IPicture>(picturePlaceHolder);
+    public picB = ko.observable<Core.IPicture>(picturePlaceHolder);
     public Authword= ko.observable("");
     public Authword2= ko.observable("");
     public CanRate= ko.pureComputed(() => {
@@ -24,18 +41,18 @@ export class ViewModel {
         return this.Authword()===this.Authword2();
     });
     public votedA= () => {        
-        this.voter.Vote(this.picA(),this.picB(),this.UserName(),this.Authword());              
+        this.voter.Vote(this.picA(),this.picB(),this.UserName(),this.Authword());
         this.Regenerate();
         this.SaveCreds();
     };
-    public votedB= () => {                
+    public votedB= () => {
         this.voter.Vote(this.picB(),this.picA(),this.UserName(),this.Authword());
         this.Regenerate();
         this.SaveCreds();
     };
     public Regenerate= () => {
-        var aIdx = Math.floor((Math.random() * this.pictures.length))
-        var bIdx = Math.floor((Math.random() * this.pictures.length))
+        var aIdx = Math.floor((Math.random() * this.pictures.length));
+        var bIdx = Math.floor((Math.random() * this.pictures.length));
         if(aIdx===bIdx)
             this.Regenerate();
         else
@@ -49,4 +66,22 @@ export class ViewModel {
         Cookies.setCookie("authword",this.Authword(),9999);
     }
 };
+
+    export class StatsVM {
+        constructor(private stats: Core.IGalleryStats) { }
+        
+        public Populate(galleryName:string) {
+            
+            var promise = this.stats.GetStats(galleryName);
+    
+            promise
+                .done((pictures:Array<Core.IPictureStats>) => {
+                    this.Pictures(pictures);                    
+                })
+                .fail((error:any) => console.error(error));                              
+        }
+        
+        public Pictures = ko.observableArray<Core.IPictureStats>();
+        
+    }
 }

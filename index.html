@@ -5,29 +5,32 @@
         <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
         <script src="bundle.js"></script>
         <link href="app.css" rel="stylesheet" title="Default Style">
+        <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
         <meta charset="UTF-8">   
     </head>
     <body>
-        <div style="display:flex; flex-direction:column;justify-content: space-around">
+        <button id="modesButton" onclick="ToggleModes()" style="position:fixed; left:3em; top:2em">Show voting results</button>
+        <div id="voting" style="display:flex; flex-direction:column;justify-content: space-around">
             <div style="align-self: center; margin:3em">
-                <h2 data-bind="visible: !CanRate()">Введите ваше уникальное и выберите слово-подпись</h2>
-                <h2 data-bind="visible: CanRate()">Выберите ваш вариант</h2>
-                <div title="Как Вы будете отображаться в статистике результатов">
-                    <label>Ваше уникальное имя:</label>
+                <h2 data-bind="visible: !CanRate()">Enter your name and word-signature</h2>
+                <h2 data-bind="visible: CanRate()">Choose your variant</h2>
+                <div title="How you will be displayed in the voting results">
+                    <label>Your name (so you can be identified in statistics):</label>
                     <input data-bind="textInput: UserName"></input>
                 </div>
-                <div  title="Слово, известное только Вам. Не хранится на back-end. Используется для создания криптографической контрольной суммы вашего выбора">
-                    <label>Слово-подпись:</label>
+                <div  title="The word which only you knows. It is not stored at backend. It is used to sign your votes, so votes can be checked for authorship">
+                    <label>word-signature:</label>
                     <input type="password" data-bind="textInput: Authword"></input>
                 </div>
                 <div>
-                    <label>Слово-подпись еще раз:</label>
+                    <label>word-signature again:</label>
                     <input type="password" data-bind="textInput: Authword2"></input>
                 </div>
-                <p data-bind="visible: !AuthwordsMatch() && Authword().length>0">Введеные Вами Слова-подписи не совпадают</p>
+                <p data-bind="visible: !AuthwordsMatch() && Authword().length>0">Words-signatures do not match</p>
             </div>
-            <button data-bind="click: Regenerate" style="align-self: center; margin:0.5em">Сменить картинки</button>
+            <button data-bind="click: Regenerate, visible:CanRate()" style="align-self: center; margin:0.5em">Refresh pictures</button>
             <div style="display:flex; flex-direction:row; justify-content: space-around">
+                
                 <div class="picture" data-bind="visible: CanRate(), click: votedA">
                     <img width="100%" data-bind="attr: { src: picA().GetURL() }"/>
                     <label data-bind="text: picA().GetCaption()"></label>
@@ -37,6 +40,24 @@
                     <label data-bind="text: picB().GetCaption()"></label>
                 </div>
             </div>
+        </div>        
+        <div id="stats" class="statContainer" data-bind="foreach: Pictures">
+            <div class="statPicture">
+                    <img style="width: 10em; margin:1em" data-bind="attr: { src: GetURL() }"/>
+                    <div class="w3-progress-container statsEntry">
+                        <div id="myBar" class="w3-progressbar w3-green"  data-bind="style: {width : getWinsProgressBar(GetWins(),GetLoses()) }">
+                            <div class="w3-center w3-text-white" data-bind="text: GetWins()"></div>
+                        </div>
+                    </div>
+                    <div class="w3-progress-container statsEntry">
+                        <div id="myBar" class="w3-progressbar w3-red"  data-bind="style: {width : getLosesProgressBar(GetWins(),GetLoses()) }">
+                            <div class="w3-center w3-text-white" data-bind="text: GetLoses()"></div>
+                        </div>
+                    </div>
+                    <label class="statsEntry"data-bind="text: 'Rating:'+GetGalleryWinsPortion()"></label>
+                    <label class="statsEntry" data-bind="text: GetCaption()"></label>
+            </div>
         </div>
+        <a href="https://github.com/dgrechka/PicsRating"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
     </body>
 </html>
