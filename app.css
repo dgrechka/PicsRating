@@ -8,3 +8,26 @@
     align-items: center;
     flex-direction: column;
 }
+
+.statPicture {
+    padding: 1em;
+    margin: 1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-style: groove;
+    border-radius: 1em;
+}
+
+.statContainer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.meter {
+    display: inline-block;
+    height: 1em;
+}

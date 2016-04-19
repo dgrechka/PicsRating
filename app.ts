@@ -3,19 +3,33 @@
 /// <reference path="Client.ts" />
 /// <reference path="ViewModel.ts" />
 
-var serviceURL = "http://home.dgrechka.net/PicsRating";
+var backendURL = "http://home.dgrechka.net/PicsRating";
+
+var galleryName= "itis_logo";
+
+var gallery: Core.IGallery = new Client.RemoteGallery(backendURL);
+var voter: Core.IVote = new Client.RemoteVoter(backendURL);
+var galleryStats: Core.IGalleryStats = new Client.RemoteGalleryStats(backendURL);
+        
+var voteVM = new ViewModels.VoteVM(gallery,voter,galleryName);
+var statsVM = new ViewModels.StatsVM(galleryStats);
+
+function getMeterPadding(wins:string,loses:string) {
+    if(parseInt(wins)>parseInt(loses))
+        return "50%";
+    else
+        return (50.0-(parseInt(loses)-parseInt(wins)/(parseInt(loses)+parseInt(wins))*50.0))+"%";
+}
+
+function getMeter(wins:string,loses:string) {
+    return (Math.abs(parseInt(wins)-parseInt(loses)/(parseInt(wins)+parseInt(loses))*50.0))+"%";
+}
+
+function GetStats() {
+    statsVM.Populate(galleryName);
+}
 
 window.onload = () => {
-    var gallery: Core.IGallery = new Client.RemoteGallery(serviceURL);
-    var voter: Core.IVote = new Client.RemoteVoter(serviceURL);
-        
-    var picturesPromise = gallery.GetPictures("itis_logo");
-    
-    picturesPromise
-        .done((pictures:Array<Core.IPicture>) => {
-            var viewModel = new ViewModel.ViewModel(pictures,voter);
-            ko.applyBindings(viewModel);
-            viewModel.Regenerate();
-        })
-        .fail((error:any) => console.error(error));      
+    ko.applyBindings(voteVM,document.getElementById("voting"));
+    ko.applyBindings(statsVM,document.getElementById("stats"));
 };
