@@ -77,7 +77,7 @@ var Client;
             var nameHash = CryptoJS.MD5(username + authword);
             var voteHash = CryptoJS.MD5(username + authword + picWin.GetName() + picLose.GetName());
             console.log("prefered " + picWin.GetName() + " to " + picLose.GetName() + ". UserSig " + nameHash);
-            var effectiveURL = this.URL + "/Vote/?voteName=itis_logo&username=" + username + "&picWin=" + picWin.GetName() + "&picLose=" + picLose.GetName() + "&userSig=" + nameHash + "&voteSig=" + voteHash;
+            var effectiveURL = this.URL + "/Vote/?voteName=demo&username=" + username + "&picWin=" + picWin.GetName() + "&picLose=" + picLose.GetName() + "&userSig=" + nameHash + "&voteSig=" + voteHash;
             $.get(effectiveURL);
         };
         return RemoteVoter;
