@@ -70,14 +70,15 @@ var Client;
     })();
     Client.RemoteGallery = RemoteGallery;
     var RemoteVoter = (function () {
-        function RemoteVoter(URL) {
+        function RemoteVoter(URL, gallery) {
             this.URL = URL;
+            this.gallery = gallery;
         }
         RemoteVoter.prototype.Vote = function (picWin, picLose, username, authword) {
             var nameHash = CryptoJS.MD5(username + authword);
             var voteHash = CryptoJS.MD5(username + authword + picWin.GetName() + picLose.GetName());
             console.log("prefered " + picWin.GetName() + " to " + picLose.GetName() + ". UserSig " + nameHash);
-            var effectiveURL = this.URL + "/Vote/?voteName=demo&username=" + username + "&picWin=" + picWin.GetName() + "&picLose=" + picLose.GetName() + "&userSig=" + nameHash + "&voteSig=" + voteHash;
+            var effectiveURL = this.URL + "/Vote/?voteName=" + this.gallery + "&username=" + username + "&picWin=" + picWin.GetName() + "&picLose=" + picLose.GetName() + "&userSig=" + nameHash + "&voteSig=" + voteHash;
             $.get(effectiveURL);
         };
         return RemoteVoter;
@@ -131,6 +132,27 @@ var picturePlaceHolder = {
     GetName: function () { return "Picture placeholder"; },
     GetURL: function () { return "#"; }
 };
+var Pair = (function () {
+    function Pair(Left, Right) {
+        this.Left = Left;
+        this.Right = Right;
+    }
+    Pair.prototype.Swap = function () {
+        var t = this.Left;
+        this.Left = this.Right;
+        this.Right = t;
+    };
+    return Pair;
+})();
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i -= 1) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
+}
 var ViewModels;
 (function (ViewModels) {
     var VoteVM = (function () {
@@ -140,11 +162,20 @@ var ViewModels;
             this.voter = voter;
             this.galleryName = galleryName;
             this.pictures = [];
+            this.pairs = [];
+            this.Idx = ko.observable(0);
             this.UserName = ko.observable("");
             this.picA = ko.observable(picturePlaceHolder);
             this.picB = ko.observable(picturePlaceHolder);
             this.Authword = ko.observable("");
             this.Authword2 = ko.observable("");
+            this.Done = $.Deferred();
+            this.GetProgress = ko.pureComputed(function () {
+                _this.Idx(); //peek
+                if (_this.pairs.length === 0)
+                    return "0%";
+                return Math.floor(_this.Idx() / _this.pairs.length * 100.0) + "%";
+            });
             this.CanRate = ko.pureComputed(function () {
                 var nameFilled = _this.UserName().length > 0;
                 var authworkFilled = _this.Authword().length > 0;
@@ -165,13 +196,12 @@ var ViewModels;
                 _this.SaveCreds();
             };
             this.Regenerate = function () {
-                var aIdx = Math.floor((Math.random() * _this.pictures.length));
-                var bIdx = Math.floor((Math.random() * _this.pictures.length));
-                if (aIdx === bIdx)
-                    _this.Regenerate();
+                _this.Idx(_this.Idx() + 1);
+                if (_this.Idx() == _this.pairs.length)
+                    _this.Done.resolve();
                 else {
-                    _this.picA(_this.pictures[aIdx]);
-                    _this.picB(_this.pictures[bIdx]);
+                    _this.picA(_this.pictures[_this.pairs[_this.Idx()].Left]);
+                    _this.picB(_this.pictures[_this.pairs[_this.Idx()].Right]);
                 }
             };
             this.UserName(Cookies.getCookie("username"));
@@ -180,7 +210,17 @@ var ViewModels;
             picturesPromise
                 .done(function (pictures) {
                 _this.pictures = pictures;
-                _this.Regenerate();
+                var len = pictures.length;
+                for (var i = 0; i < len - 1; i++)
+                    for (var j = i + 1; j < len; j++)
+                        _this.pairs.push(new Pair(i, j));
+                var len2 = _this.pairs.length;
+                for (var i = 0; i < len2; i++)
+                    if (Math.random() < 0.5)
+                        _this.pairs[i].Swap();
+                shuffle(_this.pairs);
+                _this.picA(_this.pictures[_this.pairs[0].Left]);
+                _this.picB(_this.pictures[_this.pairs[0].Right]);
             })
                 .fail(function (error) { return console.error(error); });
         }
@@ -217,7 +257,7 @@ var ViewModels;
 var backendURL = "http://home.dgrechka.net/PicsRating";
 var galleryName = "demo";
 var gallery = new Client.RemoteGallery(backendURL);
-var voter = new Client.RemoteVoter(backendURL);
+var voter = new Client.RemoteVoter(backendURL, galleryName);
 var galleryStats = new Client.RemoteGalleryStats(backendURL);
 var voteVM = new ViewModels.VoteVM(gallery, voter, galleryName);
 var statsVM = new ViewModels.StatsVM(galleryStats);
@@ -245,5 +285,12 @@ function ToggleModes() {
 window.onload = function () {
     ko.applyBindings(voteVM, document.getElementById("voting"));
     ko.applyBindings(statsVM, document.getElementById("stats"));
+    voteVM.Done.done(function () {
+        //vote ended;
+        statsVM.Populate(galleryName);
+        $("#voting").css("display", "none");
+        $("#stats").css("display", "flex");
+        $("#modesButton").css("display", "none");
+    });
 };
 //# sourceMappingURL=bundle.js.map
