@@ -12,13 +12,13 @@
         <button id="modesButton" onclick="ToggleModes()" style="position:fixed; left:3em; top:2em">Show voting results</button>
         <div id="voting" style="display:flex; flex-direction:column;justify-content: space-around">
             <div style="align-self: center; margin:3em">
-                <h2 data-bind="visible: !CanRate()">Enter your name and word-signature</h2>
+                <h2 data-bind="visible: !CanRate()">Enter your name and secret-signature</h2>
                 <h2 data-bind="visible: CanRate()">Choose your variant</h2>
                 <div title="How you will be displayed in the voting results">
                     <label>Your name (so you can be identified in statistics):</label>
                     <input data-bind="textInput: UserName"></input>
                 </div>
-                <div  title="The word which only you knows. It is not stored at backend. It is used to sign your votes, so votes can be checked for authorship">
+                <div  title="The word which only you know. It is not stored at backend. It is used to sign your votes, so votes can be checked for authorship">
                     <label>secret-signature:</label>
                     <input type="password" data-bind="textInput: Authword"></input>
                 </div>
