@@ -19,16 +19,21 @@
                     <input data-bind="textInput: UserName"></input>
                 </div>
                 <div  title="The word which only you knows. It is not stored at backend. It is used to sign your votes, so votes can be checked for authorship">
-                    <label>word-signature:</label>
+                    <label>secret-signature:</label>
                     <input type="password" data-bind="textInput: Authword"></input>
                 </div>
                 <div>
-                    <label>word-signature again:</label>
+                    <label>secret-signature again:</label>
                     <input type="password" data-bind="textInput: Authword2"></input>
                 </div>
-                <p data-bind="visible: !AuthwordsMatch() && Authword().length>0">Words-signatures do not match</p>
+                <p data-bind="visible: !AuthwordsMatch() && Authword().length>0">secret-signatures do not match</p>
             </div>
-            <button data-bind="click: Regenerate, visible:CanRate()" style="align-self: center; margin:0.5em">Refresh pictures</button>
+            <div class="w3-progress-container statsEntry" data-bind="click: Regenerate, visible:CanRate()">
+                        <div id="myBar" class="w3-progressbar w3-blue"  data-bind="style: {width : GetProgress() }">
+                            <div class="w3-center w3-text-white" data-bind="text: GetProgress()"></div>
+                        </div>
+                    </div>
+            <button data-bind="click: Regenerate, visible:CanRate()" style="align-self: center; margin:0.5em">Skip</button>
             <div style="display:flex; flex-direction:row; justify-content: space-around">
                 
                 <div class="picture" data-bind="visible: CanRate(), click: votedA">
@@ -58,6 +63,6 @@
                     <label class="statsEntry" data-bind="text: GetCaption()"></label>
             </div>
         </div>
-        <a href="https://github.com/dgrechka/PicsRating"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+        <a href="https://github.com/dgrechka/PicsRating"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
     </body>
 </html>

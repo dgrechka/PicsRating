@@ -8,9 +8,30 @@ var picturePlaceHolder:Core.IPicture = {
     GetURL: () => "#"
 }
 
+class Pair {
+    constructor(public Left:number,public Right:number) {}
+    
+    public Swap() {
+        var t = this.Left ;
+        this.Left = this.Right;
+        this.Right = t; 
+    }
+}
+
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length; i; i -= 1) {
+        j = Math.floor(Math.random() * i);
+        x = a[i - 1];
+        a[i - 1] = a[j];
+        a[j] = x;
+    }
+}
+
 namespace ViewModels {
 export class VoteVM {
     private pictures: Array<Core.IPicture> = [];
+    private pairs:Array<Pair> = []    
     constructor(private gallery:Core.IGallery, private voter:Core.IVote,private galleryName:string) {
             this.UserName(Cookies.getCookie("username"));
             this.Authword(Cookies.getCookie("authword"));
@@ -20,17 +41,37 @@ export class VoteVM {
             picturesPromise
                 .done((pictures:Array<Core.IPicture>) => {
                     this.pictures = pictures;
-                    this.Regenerate();
+                    var len = pictures.length;
+                    for(var i=0;i<len-1;i++)
+                        for(var j=i+1;j<len;j++)
+                            this.pairs.push(new Pair(i,j));
+                            
+                    var len2 = this.pairs.length;                              
+                    for(var i=0; i<len2;i++)
+                        if(Math.random()<0.5)
+                            this.pairs[i].Swap();
+                            
+                    shuffle(this.pairs);
+                    
+                    this.picA(this.pictures[this.pairs[0].Left]);
+                    this.picB(this.pictures[this.pairs[0].Right]);
                 })
                 .fail((error:any) => console.error(error));      
     }
     
-    
+    public Idx = ko.observable(0);
     public UserName = ko.observable("");
     public picA = ko.observable<Core.IPicture>(picturePlaceHolder);
     public picB = ko.observable<Core.IPicture>(picturePlaceHolder);
     public Authword= ko.observable("");
     public Authword2= ko.observable("");
+    public Done = $.Deferred<void>();
+    public GetProgress = ko.pureComputed(() => {
+        this.Idx(); //peek
+        if(this.pairs.length === 0)
+            return "0%";
+        return Math.floor(this.Idx()/this.pairs.length*100.0)+"%";
+    });
     public CanRate= ko.pureComputed(() => {
         var nameFilled = this.UserName().length>0;
         var authworkFilled = this.Authword().length>0;
@@ -51,15 +92,13 @@ export class VoteVM {
         this.SaveCreds();
     };
     public Regenerate= () => {
-        var aIdx = Math.floor((Math.random() * this.pictures.length));
-        var bIdx = Math.floor((Math.random() * this.pictures.length));
-        if(aIdx===bIdx)
-            this.Regenerate();
-        else
-        {
-            this.picA(this.pictures[aIdx]);
-            this.picB(this.pictures[bIdx]);
-        }
+       this.Idx(this.Idx()+1);
+       if(this.Idx() == this.pairs.length)
+        this.Done.resolve();
+       else {
+            this.picA(this.pictures[this.pairs[this.Idx()].Left]);
+            this.picB(this.pictures[this.pairs[this.Idx()].Right]);
+       }
     };
     private SaveCreds() {
         Cookies.setCookie("username",this.UserName(),9999);

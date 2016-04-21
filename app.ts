@@ -5,10 +5,10 @@
 
 var backendURL = "http://home.dgrechka.net/PicsRating";
 
-var galleryName= "itis_logo";
+var galleryName= "demo";
 
 var gallery: Core.IGallery = new Client.RemoteGallery(backendURL);
-var voter: Core.IVote = new Client.RemoteVoter(backendURL);
+var voter: Core.IVote = new Client.RemoteVoter(backendURL,galleryName);
 var galleryStats: Core.IGalleryStats = new Client.RemoteGalleryStats(backendURL);
         
 var voteVM = new ViewModels.VoteVM(gallery,voter,galleryName);
@@ -42,4 +42,12 @@ function ToggleModes() {
 window.onload = () => {
     ko.applyBindings(voteVM,document.getElementById("voting"));
     ko.applyBindings(statsVM,document.getElementById("stats"));
+    
+    voteVM.Done.done(() => {
+        //vote ended;
+        statsVM.Populate(galleryName);
+         $("#voting").css("display","none");
+         $("#stats").css("display","flex");
+         $("#modesButton").css("display","none");
+    });
 };
