@@ -254,7 +254,7 @@ var ViewModels;
 /// <reference path="Core.ts" />
 /// <reference path="Client.ts" />
 /// <reference path="ViewModel.ts" />
-var backendURL = "http://home.dgrechka.net/PicsRating";
+var backendURL = "http://msk.grechka.family/PicsRating";
 var galleryName = "demo";
 var gallery = new Client.RemoteGallery(backendURL);
 var voter = new Client.RemoteVoter(backendURL, galleryName);
